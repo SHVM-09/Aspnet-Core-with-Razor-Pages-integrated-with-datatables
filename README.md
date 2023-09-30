@@ -17,6 +17,7 @@ Aspnet Core Razor Pages integrated with datatables + CRUD + SQLite
 dotnet new webapp -o websiteName
 code -r websiteName
 ```
+👉 _Remember to change `websiteName` at all places where it is uses to avoid errors_
 
 ### Step 2
 #### Trust the HTTPS development certificate
@@ -106,6 +107,100 @@ dotnet run // run the app without auto reload
 ```
 <a class="navbar-brand" asp-area="" asp-page="Products/Index">Products</a>
 ```
+### Step 10
+#### Work & connect with a Local Database
+
+- download [SQLite](https://www.sqlite.org/index.html)
+  or
+- Run in terminal `brew install sqlite` & check its version `sqlite3 --version` 💻 ![](https://img.shields.io/badge/For_MAC-purple)
+
+- download [DB Browser for SQLite](https://sqlitebrowser.org/dl/)
+  or
+- Run in terminal `brew install --cask db-browser-for-sqlite` 💻 ![](https://img.shields.io/badge/For_MAC-purple)
+
+### Step 11
+#### Seed the Database
+
+- Create a new class named SeedData in the Models folder with the following code:
+
+```
+using Microsoft.EntityFrameworkCore;
+using websiteName.Data;
+using System;
+
+namespace websiteName.Models
+{
+    public static class SeedData
+    {
+        public static void Initialize(IServiceProvider serviceProvider)
+        {
+            using (var context = new websiteNameContext(
+                serviceProvider.GetRequiredService<DbContextOptions<websiteNameContext>>()))
+            {
+                if (context == null || context.Product == null)
+                {
+                    throw new ArgumentNullException("Null websiteNameContext");
+                }
+
+                // Look for any products.
+                if (context.Product.Any())
+                {
+                    return;   // DB has been seeded
+                }
+
+                context.Product.AddRange(
+                    new Product
+                    {
+                        Name = "Product 1",
+                        Price = 10.99M,
+                        ExpiryDate = DateTime.Parse("2023-10-01")
+                    },
+
+                    new Product
+                    {
+                        Name = "Product 2",
+                        Price = 19.99M,
+                        ExpiryDate = DateTime.Parse("2023-09-15")
+                    },
+
+                    new Product
+                    {
+                        Name = "Product 3",
+                        Price = 5.49M,
+                        ExpiryDate = DateTime.Parse("2023-11-05")
+                    },
+
+                    new Product
+                    {
+                        Name = "Product 4",
+                        Price = 14.99M,
+                        ExpiryDate = DateTime.Parse("2023-10-20")
+                    },
+
+                    new Product
+                    {
+                        Name = "Product 5",
+                        Price = 67.99M,
+                        ExpiryDate = DateTime.Parse("2023-10-20")
+                    }
+                );
+                context.SaveChanges();
+            }
+        }
+    }
+}
+
+```
+
+### Step 12
+#### Open the database accessing it from db browser (locate generated .db file) & update database with CLI
+
+- Use `dotnet ef migrations add updateName` & `dotnet ef database update` to update data to local database.
+
+<hr/>
+
+##### Now Your Local .NET Project would be good to go & you can deploy it on Azure or any .NET Hosting Site
+##### Still Learning about how to deploy a project with Database on Azure so will add it here after it is done! ⏲️
 
 
 
